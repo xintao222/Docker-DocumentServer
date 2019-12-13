@@ -71,6 +71,9 @@ read_setting(){
   REDIS_SERVER_HOST=${REDIS_SERVER_HOST:-$(${JSON} services.CoAuthoring.redis.host)}
   REDIS_SERVER_PORT=${REDIS_SERVER_PORT:-6379}
 
+  REDIS1_SERVER_HOST=${REDIS1_SERVER_HOST}
+  REDIS1_SERVER_PORT=${REDIS1_SERVER_PORT:-6379}
+
   DS_LOG_LEVEL=${DS_LOG_LEVEL:-$(${JSON_LOG} categories.default.level)}
 }
 
@@ -134,6 +137,11 @@ waiting_for_amqp(){
 waiting_for_redis(){
   waiting_for_connection ${REDIS_SERVER_HOST} ${REDIS_SERVER_PORT}
 }
+
+waiting_for_redis1(){
+  waiting_for_connection ${REDIS1_SERVER_HOST} ${REDIS1_SERVER_PORT}
+}
+
 waiting_for_datacontainer(){
   waiting_for_connection ${ONLYOFFICE_DATA_CONTAINER_HOST} ${ONLYOFFICE_DATA_CONTAINER_PORT}
 }
@@ -192,6 +200,13 @@ update_rabbitmq_setting(){
 update_redis_settings(){
   ${JSON} -I -e "this.services.CoAuthoring.redis.host = '${REDIS_SERVER_HOST}'"
   ${JSON} -I -e "this.services.CoAuthoring.redis.port = '${REDIS_SERVER_PORT}'"
+}
+
+update_redis1_settings(){
+  ${JSON} -I -e "this.services.CoAuthoring.redis1 = {}"
+  ${JSON} -I -e "this.services.CoAuthoring.redis1.host = '${REDIS1_SERVER_HOST}'"
+  ${JSON} -I -e "this.services.CoAuthoring.redis1.port = '${REDIS1_SERVER_PORT}'"
+  ${JSON} -I -e "this.services.CoAuthoring.redis1.name = 'redis'"
 }
 
 update_jwt_settings(){
@@ -369,6 +384,12 @@ if [ ${ONLYOFFICE_DATA_CONTAINER_HOST} = "localhost" ]; then
     update_redis_settings
   else
     LOCAL_SERVICES+=("redis-server")
+  fi
+
+  if [ ${REDIS1_SERVER_HOST} != "localhost" ]; then
+    update_redis1_settings
+  else
+    update_redis1_settings
   fi
 else
   # no need to update settings just wait for remote data

@@ -4,7 +4,7 @@ LABEL maintainer Ascensio System SIA <support@onlyoffice.com>
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 DEBIAN_FRONTEND=noninteractive
 
 ARG ONLYOFFICE_VALUE=onlyoffice
-
+RUN sed -i 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//http:\/\/mirrors\.tuna\.tsinghua\.edu\.cn\/ubuntu\//g' /etc/apt/sources.list
 RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d && \
     apt-get -y update && \
     apt-get -yq install wget apt-transport-https curl locales && \

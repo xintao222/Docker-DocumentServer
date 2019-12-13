@@ -1,0 +1,17 @@
+FROM mddocbase
+
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 DEBIAN_FRONTEND=noninteractive
+
+ARG ONLYOFFICE_VALUE=onlyoffice
+
+COPY server/DocService/sources /var/www/onlyoffice/documentserver/server/DocService/sources/
+
+COPY config /app/ds/setup/config/
+COPY run-document-server.sh /app/ds/run-document-server.sh
+EXPOSE 80 443 8000 8080
+ARG COMPANY_NAME=onlyoffice
+ARG PRODUCT_NAME=documentserver
+
+ENV COMPANY_NAME=$COMPANY_NAME
+VOLUME /var/log/$COMPANY_NAME /var/lib/$COMPANY_NAME /var/www/$COMPANY_NAME/Data /var/lib/postgresql /usr/share/fonts/truetype/custom
+ENTRYPOINT /app/ds/run-document-server.sh
