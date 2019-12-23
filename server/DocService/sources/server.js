@@ -160,9 +160,9 @@ if (cluster.isMaster) {
 
 			if (!fileUrl && id) {//Redis
 				utils.promiseRedis(mdRedisClient, mdRedisClient.get, 'md.docview.' + id).then(function (data) {
-					fileUrl = data || fileUrl;
-					const urlObj = url.parse(fileUrl);
-					const pathObj = path.parse(urlObj.pathname);
+					fileUrl = data;
+					const urlObj = url.parse(fileUrl || '');
+					const pathObj = path.parse(urlObj.pathname || '');
 					const fileType = pathObj.ext.toString().replace('.','');
 
 					res.send('<!DOCTYPE html>\n' +
@@ -181,7 +181,7 @@ if (cluster.isMaster) {
 						'      "document": {\n' +
 						'        "fileType": "' + fileType + '",\n' +
 						'        "title": "' + attname + '",\n' +
-						'        "url": "' + fileUrl + '",\n' +
+						'        "url": ' + fileUrl + ',\n' +
 						'        "permissions": {\n' +
 						'          "comment": false,\n' +
 						'          "download": false,\n' +
