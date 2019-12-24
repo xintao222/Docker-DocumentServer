@@ -160,8 +160,8 @@ if (cluster.isMaster) {
 
 			if (!fileUrl && id) {//Redis
 				utils.promiseRedis(mdRedisClient, mdRedisClient.get, 'md.docview.' + id).then(function (data) {
-					fileUrl = data;
-					const urlObj = url.parse(fileUrl || '');
+					fileUrl = (data || '').replace(/\"/g,'');
+					const urlObj = url.parse(fileUrl);
 					const pathObj = path.parse(urlObj.pathname || '');
 					const fileType = pathObj.ext.toString().replace('.','');
 
@@ -181,7 +181,7 @@ if (cluster.isMaster) {
 						'      "document": {\n' +
 						'        "fileType": "' + fileType + '",\n' +
 						'        "title": "' + attname + '",\n' +
-						'        "url": ' + fileUrl + ',\n' +
+						'        "url": "' + fileUrl + '",\n' +
 						'        "permissions": {\n' +
 						'          "comment": false,\n' +
 						'          "download": false,\n' +
@@ -200,7 +200,7 @@ if (cluster.isMaster) {
 						'            "imageEmbedded": "https://passport.baidu.com/passApi/img/small_blank.gif",\n' +
 						'            "url": "https://www.baidu.com"\n' +
 						'          },\n' +
-						'          "loaderName": " ",\n' +
+						'          //"loaderName": " ",\n' +
 						'          "autosave": false,\n' +
 						'          "chat": false,\n' +
 						'          "commentAuthorOnly": false,\n' +
@@ -281,7 +281,7 @@ if (cluster.isMaster) {
 					'            "imageEmbedded": "https://passport.baidu.com/passApi/img/small_blank.gif",\n' +
 					'            "url": "https://www.baidu.com"\n' +
 					'          },\n' +
-					'          "loaderName": " ",\n' +
+					'          //"loaderName": " ",\n' +
 					'          "autosave": false,\n' +
 					'          "chat": false,\n' +
 					'          "commentAuthorOnly": false,\n' +
