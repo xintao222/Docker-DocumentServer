@@ -693,6 +693,9 @@
         for (var i = scripts.length - 1; i >= 0; i--) {
             match = scripts[i].src.match(/(.*)api\/documents\/api.js/i);
             if (match) {
+                if(match[1]){
+                    return "."+match[1].substring(match[1].indexOf('/web-apps'))
+                }
                 return match[1];
             }
         }
