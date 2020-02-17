@@ -175,7 +175,7 @@ if (cluster.isMaster) {
 						'<div width="100%" style="height: 100%;">\n' +
 						'    <div id="placeholder"></div>\n' +
 						'</div>\n' +
-						'<script type="text/javascript" src="' + utils.getBaseUrlByRequest(req) + '/web-apps/apps/api/documents/api.js"></script>\n' +
+						'<script type="text/javascript" src="./web-apps/apps/api/documents/api.js"></script>\n' +
 						'<script type="application/javascript">\n' +
 						'  var config = {\n' +
 						'      "document": {\n' +
@@ -256,7 +256,7 @@ if (cluster.isMaster) {
 					'<div width="100%" style="height: 100%;">\n' +
 					'    <div id="placeholder"></div>\n' +
 					'</div>\n' +
-					'<script type="text/javascript" src="' + utils.getBaseUrlByRequest(req) + '/web-apps/apps/api/documents/api.js"></script>\n' +
+					'<script type="text/javascript" src="./web-apps/apps/api/documents/api.js"></script>\n' +
 					'<script type="application/javascript">\n' +
 					'  var config = {\n' +
 					'      "document": {\n' +
