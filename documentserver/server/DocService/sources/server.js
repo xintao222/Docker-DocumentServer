@@ -229,6 +229,7 @@ if (cluster.isMaster) {
 						'          "hideRightMenu": true,\n' +
 						'          "showReviewChanges": false,\n' +
 						'          "toolbarNoTabs": false,\n' +
+						'          "spellcheck": false,\n' +
 						'          "zoom": 100\n' +
 						'        },\n' +
 						'        "mode": "view",\n' +
