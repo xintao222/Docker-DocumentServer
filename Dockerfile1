@@ -6,6 +6,8 @@ ARG ONLYOFFICE_VALUE=onlyoffice
 
 COPY documentserver/server/DocService/sources /var/www/onlyoffice/documentserver/server/DocService/sources/
 COPY documentserver/web-apps/apps/api/documents /var/www/onlyoffice/documentserver/web-apps/apps/api/documents/
+COPY documentserver/web-apps/apps/vendor/jquery /var/www/onlyoffice/documentserver/web-apps/vendor/jquery.browser/dist/
+
 COPY config /app/ds/setup/config/
 COPY run-document-server.sh /app/ds/run-document-server.sh
 
