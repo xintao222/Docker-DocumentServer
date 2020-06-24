@@ -187,7 +187,7 @@ if (cluster.isMaster) {
 						'          "download": false,\n' +
 						'          "edit": false,\n' +
 						'          "fillForms": false,\n' +
-						'          "print": false,\n' +
+						'          "print": true,\n' +
 						'          "review": false\n' +
 						'        },\n' +
 						'      },\n' +
@@ -269,7 +269,7 @@ if (cluster.isMaster) {
 					'          "download": false,\n' +
 					'          "edit": false,\n' +
 					'          "fillForms": false,\n' +
-					'          "print": false,\n' +
+					'          "print": true,\n' +
 					'          "review": false\n' +
 					'        },\n' +
 					'      },\n' +
