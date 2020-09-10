@@ -1,7 +1,7 @@
 /*
  * Copyright (C) Ascensio System SIA 2012-2019. All rights reserved
  *
- * https://www.onlyoffice.com/ 
+ * https://www.onlyoffice.com/
  *
  * Version: 5.4.2 (build:46)
  */
@@ -155,7 +155,7 @@ if (cluster.isMaster) {
 		app.get('/view', (req, res) => {
 			let fileUrl = req.query.url;
 			const id = req.query.id;
-			const attname = req.query.attname;
+			const attname = req.query.attname || ' ';
 			const type = req.query.type || 'embedded';
 
 
@@ -245,7 +245,7 @@ if (cluster.isMaster) {
 				});
 			}else {
 				if(config.Internet_Address && config.Intranet_Address) {
-					fileUrl.replaceAll(config.Internet_Address, config.Intranet_Address)
+					fileUrl.replace(config.Internet_Address, config.Intranet_Address);
 				}
 				const urlObj = url.parse(fileUrl);
 				const pathObj = path.parse(urlObj.pathname);
