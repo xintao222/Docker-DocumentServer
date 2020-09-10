@@ -89,7 +89,7 @@ if (cluster.isMaster) {
 	setInterval(updateLicense, 86400000);
 } else {
 	logger.warn('Express server starting...'
-		+' Internet_Address:'+config.Internet_Address+'Intranet_Address:'+config.Intranet_Address);
+		+' ENV_FILE_OUTER_ADDR:'+config.ENV_FILE_OUTER_ADDR+'ENV_FILE_INTER_ADDR:'+config.ENV_FILE_INTER_ADDR);
 
 	const express = require('express');
 	const http = require('http');
@@ -244,8 +244,8 @@ if (cluster.isMaster) {
 						'</body>\n');
 				});
 			}else {
-				if(config.Internet_Address && config.Intranet_Address) {
-					fileUrl.replace(config.Internet_Address, config.Intranet_Address);
+				if(config.ENV_FILE_OUTER_ADDR && config.ENV_FILE_INTER_ADDR) {
+					fileUrl = fileUrl.replace(config.ENV_FILE_OUTER_ADDR, config.ENV_FILE_INTER_ADDR);
 				}
 				const urlObj = url.parse(fileUrl);
 				const pathObj = path.parse(urlObj.pathname);
