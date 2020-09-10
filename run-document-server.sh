@@ -207,6 +207,9 @@ update_redis1_settings(){
   ${JSON} -I -e "this.services.CoAuthoring.redis1.host = '${REDIS1_SERVER_HOST}'"
   ${JSON} -I -e "this.services.CoAuthoring.redis1.port = '${REDIS1_SERVER_PORT}'"
   ${JSON} -I -e "this.services.CoAuthoring.redis1.name = 'redis'"
+
+  ${JSON} -I -e "this.services.CoAuthoring.Internet_Address = '${Internet_Address}'"
+  ${JSON} -I -e "this.services.CoAuthoring.Intranet_Address = '${Intranet_Address}'"
 }
 
 update_jwt_settings(){
