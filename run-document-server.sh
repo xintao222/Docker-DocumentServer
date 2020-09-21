@@ -208,8 +208,7 @@ update_redis1_settings(){
   ${JSON} -I -e "this.services.CoAuthoring.redis1.port = '${REDIS1_SERVER_PORT}'"
   ${JSON} -I -e "this.services.CoAuthoring.redis1.name = 'redis'"
 
-  ${JSON} -I -e "this.services.CoAuthoring.ENV_FILE_OUTER_ADDR = '${ENV_FILE_OUTER_ADDR}'"
-  ${JSON} -I -e "this.services.CoAuthoring.ENV_FILE_INTER_ADDR = '${ENV_FILE_INTER_ADDR}'"
+  ${JSON} -I -e "this.services.CoAuthoring.ENV_FILE_INNER_URI = '${ENV_FILE_INNER_URI}'"
 }
 
 update_jwt_settings(){

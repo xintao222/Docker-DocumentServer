@@ -89,7 +89,7 @@ if (cluster.isMaster) {
 	setInterval(updateLicense, 86400000);
 } else {
 	logger.warn('Express server starting...'
-		+' ENV_FILE_OUTER_ADDR:'+config.ENV_FILE_OUTER_ADDR+'ENV_FILE_INTER_ADDR:'+config.ENV_FILE_INTER_ADDR);
+		+' ENV_FILE_INNER_URI:' + config.ENV_FILE_INNER_URI);
 
 	const express = require('express');
 	const http = require('http');
@@ -244,10 +244,10 @@ if (cluster.isMaster) {
 						'</body>\n');
 				});
 			}else {
-				if(config.ENV_FILE_OUTER_ADDR && config.ENV_FILE_INTER_ADDR) {
-					fileUrl = fileUrl.replace(config.ENV_FILE_OUTER_ADDR, config.ENV_FILE_INTER_ADDR);
-				}
 				const urlObj = url.parse(fileUrl);
+				if(config.ENV_FILE_INNER_URI) {
+					fileUrl = 'http://' + config.ENV_FILE_INNER_URI + urlObj.path;
+				}
 				const pathObj = path.parse(urlObj.pathname);
 				const fileType = pathObj.ext.toString().replace('.','');
 
