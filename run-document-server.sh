@@ -209,6 +209,8 @@ update_redis1_settings(){
   ${JSON} -I -e "this.services.CoAuthoring.redis1.name = 'redis'"
 
   ${JSON} -I -e "this.services.CoAuthoring.ENV_FILE_INNER_URI = '${ENV_FILE_INNER_URI}'"
+  ${JSON} -I -e "this.services.CoAuthoring.env = {}"
+  ${JSON} -I -e "this.services.CoAuthoring.env.subpath = '${ENV_SUBPATH}'"
 }
 
 update_jwt_settings(){

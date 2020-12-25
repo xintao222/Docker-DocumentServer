@@ -11,6 +11,7 @@
 const cluster = require('cluster');
 const configCommon = require('config');
 const config = configCommon.get('services.CoAuthoring');
+const cfgEnvSubpath = config.get('env.subpath');
 const logger = require('./../../Common/sources/logger');
 const co = require('co');
 const license = require('./../../Common/sources/license');
@@ -110,11 +111,19 @@ if (cluster.isMaster) {
 	const mdRedisClient = mdRedis.getClientRedis();
 
 	let userPlugins = null, updatePlugins = true;
+	let subPathRouter;
+
+	if(cfgEnvSubpath) {
+		subPathRouter = express.Router()
+		app.use(cfgEnvSubpath, subPathRouter);
+	} else {
+		subPathRouter = app;
+	}
 
 	if (config.has('server.static_content')) {
 		const staticContent = config.get('server.static_content');
 		for (let i in staticContent) {
-			app.use(i, express.static(staticContent[i]['path'], staticContent[i]['options']));
+			subPathRouter.use(i, express.static(staticContent[i]['path'], staticContent[i]['options']));
 		}
 	}
 
@@ -152,7 +161,7 @@ if (cluster.isMaster) {
 			logger.warn("Express server listening on port %d in %s mode", config.get('server.port'), app.settings.env);
 		});
 
-		app.get('/view', (req, res) => {
+		subPathRouter.get('/view', (req, res) => {
 			let fileUrl = req.query.url;
 			const id = req.query.id;
 			const attname = req.query.attname || ' ';
@@ -329,66 +338,66 @@ if (cluster.isMaster) {
 			}
 		});
 
-		app.get('/index.html', (req, res) => {
+		subPathRouter.get('/index.html', (req, res) => {
 			res.send(req.query.url+'Server is functioning normally. Version: ' + commonDefines.buildVersion + '. Build: ' +
 				commonDefines.buildNumber);
 		});
 		const rawFileParser = bodyParser.raw(
 			{inflate: true, limit: config.get('server.limits_tempfile_upload'), type: '*/*'});
 
-		app.get('/coauthoring/CommandService.ashx', utils.checkClientIp, rawFileParser, docsCoServer.commandFromServer);
-		app.post('/coauthoring/CommandService.ashx', utils.checkClientIp, rawFileParser,
+		subPathRouter.get('/coauthoring/CommandService.ashx', utils.checkClientIp, rawFileParser, docsCoServer.commandFromServer);
+		subPathRouter.post('/coauthoring/CommandService.ashx', utils.checkClientIp, rawFileParser,
 			docsCoServer.commandFromServer);
 
-		app.get('/ConvertService.ashx', utils.checkClientIp, rawFileParser, converterService.convertXml);
-		app.post('/ConvertService.ashx', utils.checkClientIp, rawFileParser, converterService.convertXml);
-		app.post('/converter', utils.checkClientIp, rawFileParser, converterService.convertJson);
+		subPathRouter.get('/ConvertService.ashx', utils.checkClientIp, rawFileParser, converterService.convertXml);
+		subPathRouter.post('/ConvertService.ashx', utils.checkClientIp, rawFileParser, converterService.convertXml);
+		subPathRouter.post('/converter', utils.checkClientIp, rawFileParser, converterService.convertJson);
 
 
-		app.get('/FileUploader.ashx', utils.checkClientIp, rawFileParser, fileUploaderService.uploadTempFile);
-		app.post('/FileUploader.ashx', utils.checkClientIp, rawFileParser, fileUploaderService.uploadTempFile);
+		subPathRouter.get('/FileUploader.ashx', utils.checkClientIp, rawFileParser, fileUploaderService.uploadTempFile);
+		subPathRouter.post('/FileUploader.ashx', utils.checkClientIp, rawFileParser, fileUploaderService.uploadTempFile);
 
 		const docIdRegExp = new RegExp("^[" + constants.DOC_ID_PATTERN + "]*$", 'i');
-		app.param('docid', (req, res, next, val) => {
+		subPathRouter.param('docid', (req, res, next, val) => {
 			if (docIdRegExp.test(val)) {
 				next();
 			} else {
 				res.sendStatus(403);
 			}
 		});
-		app.param('index', (req, res, next, val) => {
+		subPathRouter.param('index', (req, res, next, val) => {
 			if (!isNaN(parseInt(val))) {
 				next();
 			} else {
 				res.sendStatus(403);
 			}
 		});
-		app.post('/uploadold/:docid/:userid/:index', fileUploaderService.uploadImageFileOld);
-		app.post('/upload/:docid/:userid/:index', rawFileParser, fileUploaderService.uploadImageFile);
+		subPathRouter.post('/uploadold/:docid/:userid/:index', fileUploaderService.uploadImageFileOld);
+		subPathRouter.post('/upload/:docid/:userid/:index', rawFileParser, fileUploaderService.uploadImageFile);
 
-		app.post('/downloadas/:docid', rawFileParser, canvasService.downloadAs);
-		app.post('/savefile/:docid', rawFileParser, canvasService.saveFile);
-		app.get('/healthcheck', utils.checkClientIp, docsCoServer.healthCheck);
+		subPathRouter.post('/downloadas/:docid', rawFileParser, canvasService.downloadAs);
+		subPathRouter.post('/savefile/:docid', rawFileParser, canvasService.saveFile);
+		subPathRouter.get('/healthcheck', utils.checkClientIp, docsCoServer.healthCheck);
 
-		app.get('/baseurl', (req, res) => {
+		subPathRouter.get('/baseurl', (req, res) => {
 			res.send(utils.getBaseUrlByRequest(req));
 		});
 
-		app.get('/robots.txt', (req, res) => {
+		subPathRouter.get('/robots.txt', (req, res) => {
 			res.setHeader('Content-Type', 'plain/text');
 			res.send("User-agent: *\nDisallow: /");
 		});
 
-		app.post('/docbuilder', utils.checkClientIp, rawFileParser, (req, res) => {
+		subPathRouter.post('/docbuilder', utils.checkClientIp, rawFileParser, (req, res) => {
 			converterService.builder(req, res);
 		});
-		app.get('/info/info.json', utils.checkClientIp, docsCoServer.licenseInfo);
+		subPathRouter.get('/info/info.json', utils.checkClientIp, docsCoServer.licenseInfo);
 
 		const sendUserPlugins = (res, data) => {
 			res.setHeader('Content-Type', 'application/json');
 			res.send(JSON.stringify(data));
 		};
-		app.get('/plugins.json', (req, res) => {
+		subPathRouter.get('/plugins.json', (req, res) => {
 			if (userPlugins && !updatePlugins) {
 				sendUserPlugins(res, userPlugins);
 				return;
