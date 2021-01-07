@@ -5,6 +5,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 DEBIAN_FRONTEND=nonint
 ARG ONLYOFFICE_VALUE=onlyoffice
 
 COPY documentserver/server/DocService/sources /var/www/onlyoffice/documentserver/server/DocService/sources/
+COPY documentserver/server/Common/sources /var/www/onlyoffice/documentserver/server/Common/sources/
 COPY documentserver/web-apps/apps/api/documents /var/www/onlyoffice/documentserver/web-apps/apps/api/documents/
 COPY documentserver/web-apps/apps/vendor/jquery /var/www/onlyoffice/documentserver/web-apps/vendor/jquery.browser/dist/
 COPY documentserver/web-apps/apps/documenteditor/main/resources/css /var/www/onlyoffice/documentserver/web-apps/apps/documenteditor/main/resources/css/

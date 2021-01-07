@@ -130,7 +130,7 @@ if (cluster.isMaster) {
 	if (configStorage.has('fs.folderPath')) {
 		const cfgBucketName = configStorage.get('bucketName');
 		const cfgStorageFolderName = configStorage.get('storageFolderName');
-		app.use((cfgEnvSubpath ? cfgEnvSubpath : "") + '/' + cfgBucketName + '/' + cfgStorageFolderName, (req, res, next) => {
+		subPathRouter.use('/' + cfgBucketName + '/' + cfgStorageFolderName, (req, res, next) => {
 			const index = req.url.lastIndexOf('/');
 			if ('GET' === req.method && -1 != index) {
 				const contentDisposition = req.query['disposition'] || 'attachment';

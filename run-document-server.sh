@@ -75,6 +75,8 @@ read_setting(){
   REDIS1_SERVER_PORT=${REDIS1_SERVER_PORT:-6379}
 
   DS_LOG_LEVEL=${DS_LOG_LEVEL:-$(${JSON_LOG} categories.default.level)}
+
+  ENV_SUBPATH=${ENV_SUBPATH:-/preview}
 }
 
 parse_rabbitmq_url(){
