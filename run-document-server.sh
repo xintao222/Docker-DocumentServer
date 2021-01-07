@@ -76,7 +76,7 @@ read_setting(){
 
   DS_LOG_LEVEL=${DS_LOG_LEVEL:-$(${JSON_LOG} categories.default.level)}
 
-  ENV_SUBPATH=${ENV_SUBPATH:-/preview}
+  ENV_SUBPATH=${ENV_SUBPATH:-/docpreview}
 }
 
 parse_rabbitmq_url(){
