@@ -173,7 +173,7 @@ if (cluster.isMaster) {
 					fileUrl = (data || '').replace(/\"/g,'');
 					const urlObj = url.parse(fileUrl);
 					const pathObj = path.parse(urlObj.pathname || '');
-					const fileType = pathObj.ext.toString().replace('.','');
+					const fileType = pathObj.ext.toString().replace('.','').toLowerCase();
 
 					res.send('<!DOCTYPE html>\n' +
 						'<html lang="en" style="height: 100%;">\n' +
@@ -258,7 +258,7 @@ if (cluster.isMaster) {
 					fileUrl = 'http://' + config.ENV_FILE_INNER_URI + urlObj.path;
 				}
 				const pathObj = path.parse(urlObj.pathname);
-				const fileType = pathObj.ext.toString().replace('.','');
+				const fileType = pathObj.ext.toString().replace('.','').toLowerCase();
 
 				res.send('<!DOCTYPE html>\n' +
 					'<html lang="en" style="height: 100%;">\n' +
