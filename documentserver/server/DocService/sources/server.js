@@ -18,6 +18,7 @@ const license = require('./../../Common/sources/license');
 const mdRedis = require('./mdRedis');
 const url = require('url');
 const path = require('path');
+const escapeHtml = require('escape-html');
 
 if (cluster.isMaster) {
 	const fs = require('fs');
@@ -264,7 +265,7 @@ if (cluster.isMaster) {
 					'<html lang="en" style="height: 100%;">\n' +
 					'<head>\n' +
 					'    <meta charset="UTF-8">\n' +
-					'    <title>' + attname + '</title>\n' +
+					'    <title>' + escapeHtml(attname) + '</title>\n' +
 					'</head>\n' +
 					'<body style="height: 100%;margin: 0;">\n' +
 					'<div width="100%" style="height: 100%;">\n' +
@@ -274,9 +275,9 @@ if (cluster.isMaster) {
 					'<script type="application/javascript">\n' +
 					'  var config = {\n' +
 					'      "document": {\n' +
-					'        "fileType": "' + fileType + '",\n' +
-					'        "title": "' + attname + '",\n' +
-					'        "url": "' + fileUrl + '",\n' +
+					'        "fileType": "' + escapeHtml(fileType) + '",\n' +
+					'        "title": "' + escapeHtml(attname) + '",\n' +
+					'        "url": "' + escapeHtml(fileUrl).replace(/&amp;/g,'&') + '",\n' +
 					'        "permissions": {\n' +
 					'          "comment": false,\n' +
 					'          "download": false,\n' +
@@ -286,7 +287,7 @@ if (cluster.isMaster) {
 					'          "review": false\n' +
 					'        },\n' +
 					'      },\n' +
-					'      "type": "' + type + '",\n' +
+					'      "type": "' + escapeHtml(type) + '",\n' +
 					'      "editorConfig": {\n' +
 					'        "lang": "zh",\n' +
 					'        "customization": {\n' +
