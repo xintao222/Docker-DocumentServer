@@ -1,24 +1,8 @@
-FROM hub.mingdao.com/md/documentserverbase:20191213_1748
+FROM hub.mingdao.com/md/documentserverbase
 
-ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 DEBIAN_FRONTEND=noninteractive
-
-ARG ONLYOFFICE_VALUE=onlyoffice
-
-COPY documentserver/server/DocService/sources /var/www/onlyoffice/documentserver/server/DocService/sources/
-COPY documentserver/server/Common/sources /var/www/onlyoffice/documentserver/server/Common/sources/
-COPY documentserver/web-apps/apps/api/documents /var/www/onlyoffice/documentserver/web-apps/apps/api/documents/
-COPY documentserver/web-apps/apps/vendor/jquery /var/www/onlyoffice/documentserver/web-apps/vendor/jquery.browser/dist/
-COPY documentserver/web-apps/apps/documenteditor/main/resources/css /var/www/onlyoffice/documentserver/web-apps/apps/documenteditor/main/resources/css/
-COPY documentserver/web-apps/apps/documenteditor/embed/resources/css /var/www/onlyoffice/documentserver/web-apps/apps/documenteditor/embed/resources/css/
-COPY documentserver/server/DocService/node_modules/sockjs/lib /var/www/onlyoffice/documentserver/server/DocService/node_modules/sockjs/lib/
+EXPOSE 80 443
 
 COPY config /app/ds/setup/config/
 COPY run-document-server.sh /app/ds/run-document-server.sh
-
-EXPOSE 8000
-ARG COMPANY_NAME=onlyoffice
-ARG PRODUCT_NAME=documentserver
-
-ENV COMPANY_NAME=$COMPANY_NAME
-VOLUME /var/log/$COMPANY_NAME /var/lib/$COMPANY_NAME /var/www/$COMPANY_NAME/Data /var/lib/postgresql /usr/share/fonts/truetype/custom
-ENTRYPOINT /app/ds/run-document-server.sh
+COPY docservice /var/www/onlyoffice/documentserver/server/DocService/docservice
+ENTRYPOINT ["/app/ds/run-document-server.sh"]

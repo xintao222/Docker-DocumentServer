@@ -21,6 +21,10 @@
 
 ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time.
 
+Starting from version 6.0, Document Server is distributed as ONLYOFFICE Docs. It has [three editions](https://github.com/ONLYOFFICE/DocumentServer#onlyoffice-document-server-editions). With this image, you will install the free Community version. 
+
+ONLYOFFICE Docs can be used as a part of ONLYOFFICE Workspace or with third-party sync&share solutions (e.g. Nextcloud, ownCloud, Seafile) to enable collaborative editing within their interface.
+
 ## Functionality ##
 * ONLYOFFICE Document Editor
 * ONLYOFFICE Spreadsheet Editor
@@ -67,6 +71,8 @@ To get access to your data from outside the container, you need to mount the vol
         -v /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice  \
         -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  \
         -v /app/onlyoffice/DocumentServer/lib:/var/lib/onlyoffice \
+        -v /app/onlyoffice/DocumentServer/rabbitmq:/var/lib/rabbitmq \
+        -v /app/onlyoffice/DocumentServer/redis:/var/lib/redis \
         -v /app/onlyoffice/DocumentServer/db:/var/lib/postgresql  onlyoffice/documentserver
 
 Normally, you do not need to store container data because the container's operation does not depend on its state. Saving data will be useful:
@@ -94,10 +100,17 @@ To secure the application via SSL basically two things are needed:
 
 So you need to create and install the following files:
 
-        /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
-        /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt
+        /app/onlyoffice/DocumentServer/data/certs/tls.key
+        /app/onlyoffice/DocumentServer/data/certs/tls.crt
 
-When using CA certified certificates, these files are provided to you by the CA. When using self-signed certificates you need to generate these files yourself. Skip the following section if you are have CA certified SSL certificates.
+When using CA certified certificates (e.g [Let's encrypt](https://letsencrypt.org)), these files are provided to you by the CA. If you are using self-signed certificates you need to generate these files [yourself](#generation-of-self-signed-certificates).
+
+#### Using the automatically generated Let's Encrypt SSL Certificates
+
+        sudo docker run -i -t -d -p 80:80 -p 443:443 \
+        -e LETS_ENCRYPT_DOMAIN=your_domain -e LETS_ENCRYPT_MAIL=your_mail  onlyoffice/documentserver
+
+If you want to get and extend Let's Encrypt SSL Certificates automatically just set LETS_ENCRYPT_DOMAIN and LETS_ENCRYPT_MAIL variables.
 
 #### Generation of Self Signed Certificates
 
@@ -106,19 +119,19 @@ Generation of self-signed SSL certificates involves a simple 3 step procedure.
 **STEP 1**: Create the server private key
 
 ```bash
-openssl genrsa -out onlyoffice.key 2048
+openssl genrsa -out tls.key 2048
 ```
 
 **STEP 2**: Create the certificate signing request (CSR)
 
 ```bash
-openssl req -new -key onlyoffice.key -out onlyoffice.csr
+openssl req -new -key tls.key -out tls.csr
 ```
 
 **STEP 3**: Sign the certificate using the private key and CSR
 
 ```bash
-openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
+openssl x509 -req -days 365 -in tls.csr -signkey tls.key -out tls.crt
 ```
 
 You have now generated an SSL certificate that's valid for 365 days.
@@ -134,18 +147,18 @@ openssl dhparam -out dhparam.pem 2048
 
 #### Installation of the SSL Certificates
 
-Out of the four files generated above, you need to install the `onlyoffice.key`, `onlyoffice.crt` and `dhparam.pem` files at the onlyoffice server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).
+Out of the four files generated above, you need to install the `tls.key`, `tls.crt` and `dhparam.pem` files at the onlyoffice server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).
 
 The default path that the onlyoffice application is configured to look for the SSL certificates is at `/var/www/onlyoffice/Data/certs`, this can however be changed using the `SSL_KEY_PATH`, `SSL_CERTIFICATE_PATH` and `SSL_DHPARAM_PATH` configuration options.
 
-The `/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to create a folder named certs inside `/app/onlyoffice/DocumentServer/data/` and copy the files into it and as a measure of security you will update the permission on the `onlyoffice.key` file to only be readable by the owner.
+The `/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to create a folder named certs inside `/app/onlyoffice/DocumentServer/data/` and copy the files into it and as a measure of security you will update the permission on the `tls.key` file to only be readable by the owner.
 
 ```bash
 mkdir -p /app/onlyoffice/DocumentServer/data/certs
-cp onlyoffice.key /app/onlyoffice/DocumentServer/data/certs/
-cp onlyoffice.crt /app/onlyoffice/DocumentServer/data/certs/
+cp tls.key /app/onlyoffice/DocumentServer/data/certs/
+cp tls.crt /app/onlyoffice/DocumentServer/data/certs/
 cp dhparam.pem /app/onlyoffice/DocumentServer/data/certs/
-chmod 400 /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
+chmod 400 /app/onlyoffice/DocumentServer/data/certs/tls.key
 ```
 
 You are now just one step away from having our application secured.
@@ -158,17 +171,18 @@ Below is the complete list of parameters that can be set using environment varia
 
 - **ONLYOFFICE_HTTPS_HSTS_ENABLED**: Advanced configuration option for turning off the HSTS configuration. Applicable only when SSL is in use. Defaults to `true`.
 - **ONLYOFFICE_HTTPS_HSTS_MAXAGE**: Advanced configuration option for setting the HSTS max-age in the onlyoffice nginx vHost configuration. Applicable only when SSL is in use. Defaults to `31536000`.
-- **SSL_CERTIFICATE_PATH**: The path to the SSL certificate to use. Defaults to `/var/www/onlyoffice/Data/certs/onlyoffice.crt`.
-- **SSL_KEY_PATH**: The path to the SSL certificate's private key. Defaults to `/var/www/onlyoffice/Data/certs/onlyoffice.key`.
+- **SSL_CERTIFICATE_PATH**: The path to the SSL certificate to use. Defaults to `/var/www/onlyoffice/Data/certs/tls.crt`.
+- **SSL_KEY_PATH**: The path to the SSL certificate's private key. Defaults to `/var/www/onlyoffice/Data/certs/tls.key`.
 - **SSL_DHPARAM_PATH**: The path to the Diffie-Hellman parameter. Defaults to `/var/www/onlyoffice/Data/certs/dhparam.pem`.
 - **SSL_VERIFY_CLIENT**: Enable verification of client certificates using the `CA_CERTIFICATES_PATH` file. Defaults to `false`
-- **POSTGRESQL_SERVER_HOST**: The IP address or the name of the host where the PostgreSQL server is running.
-- **POSTGRESQL_SERVER_PORT**: The PostgreSQL server port number.
-- **POSTGRESQL_SERVER_DB_NAME**: The name of a PostgreSQL database to be created on the image startup.
-- **POSTGRESQL_SERVER_USER**: The new user name with superuser permissions for the PostgreSQL account.
-- **POSTGRESQL_SERVER_PASS**: The password set for the PostgreSQL account.
-- **AMQP_SERVER_URL**: The [AMQP URL](http://www.rabbitmq.com/uri-spec.html "RabbitMQ URI Specification") to connect to message broker server.
-- **AMQP_SERVER_TYPE**: The message broker type. Supported values are `rabbitmq` or `activemq`. Defaults to `rabbitmq`.
+- **DB_TYPE**: The database type. Supported values are `postgres`, `mariadb` or `mysql`. Defaults to `postgres`.
+- **DB_HOST**: The IP address or the name of the host where the database server is running.
+- **DB_PORT**: The database server port number.
+- **DB_NAME**: The name of a database to use. Should be existing on container startup.
+- **DB_USER**: The new user name with superuser permissions for the database account.
+- **DB_PWD**: The password set for the database account.
+- **AMQP_URI**: The [AMQP URI](https://www.rabbitmq.com/uri-spec.html "RabbitMQ URI Specification") to connect to message broker server.
+- **AMQP_TYPE**: The message broker type. Supported values are `rabbitmq` or `activemq`. Defaults to `rabbitmq`.
 - **REDIS_SERVER_HOST**: The IP address or the name of the host where the Redis server is running.
 - **REDIS_SERVER_PORT**:  The Redis server port number.
 - **NGINX_WORKER_PROCESSES**: Defines the number of nginx worker processes.
@@ -176,6 +190,15 @@ Below is the complete list of parameters that can be set using environment varia
 - **JWT_ENABLED**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `false`.
 - **JWT_SECRET**: Defines the secret key to validate the JSON Web Token in the request to the ONLYOFFICE Document Server. Defaults to `secret`.
 - **JWT_HEADER**: Defines the http header that will be used to send the JSON Web Token. Defaults to `Authorization`.
+- **JWT_IN_BODY**: Specifies the enabling the token validation in the request body to the ONLYOFFICE Document Server. Defaults to `false`.
+- **USE_UNAUTHORIZED_STORAGE**: Set to `true`if using selfsigned certificates for your storage server e.g. Nextcloud. Defaults to `false`
+- **GENERATE_FONTS**: When 'true' regenerates fonts list and the fonts thumbnails etc. at each start. Defaults to `true`
+- **METRICS_ENABLED**: Specifies the enabling StatsD for ONLYOFFICE Document Server. Defaults to `false`.
+- **METRICS_HOST**: Defines StatsD listening host. Defaults to `localhost`.
+- **METRICS_PORT**: Defines StatsD listening port. Defaults to `8125`.
+- **METRICS_PREFIX**: Defines StatsD metrics prefix for backend services. Defaults to `ds.`.
+- **LETS_ENCRYPT_DOMAIN**: Defines the domain for Let's Encrypt certificate.
+- **LETS_ENCRYPT_MAIL**: Defines the domain administator mail address for Let's Encrypt certificate.
 
 ## Installing ONLYOFFICE Document Server integrated with Community and Mail Servers
 
@@ -259,7 +282,7 @@ Alternatively, you can use an automatic installation script to install the whole
 **STEP 1**: Download the Community Edition Docker script file
 
 ```bash
-wget http://download.onlyoffice.com/install/opensource-install.sh
+wget https://download.onlyoffice.com/install/opensource-install.sh
 ```
 
 **STEP 2**: Install ONLYOFFICE Community Edition executing the following command:
@@ -311,5 +334,5 @@ SaaS version: [https://www.onlyoffice.com/cloud-office.aspx](https://www.onlyoff
 
 If you have any problems with or questions about this image, please visit our official forum to find answers to your questions: [dev.onlyoffice.org][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][2].
 
-  [1]: http://dev.onlyoffice.org
-  [2]: http://stackoverflow.com/questions/tagged/onlyoffice
+  [1]: https://dev.onlyoffice.org
+  [2]: https://stackoverflow.com/questions/tagged/onlyoffice

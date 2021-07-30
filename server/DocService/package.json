@@ -1,0 +1,44 @@
+{
+  "name": "coauthoring",
+  "version": "1.0.1",
+  "homepage": "http://www.onlyoffice.com",
+  "private": true,
+  "bin": {
+    "docservice": "sources/server.js",
+    "gc": "sources/gc.js",
+    "prepare4shutdown": "sources/shutdown.js"
+  },
+  "dependencies": {
+    "base64-stream": "^1.0.0",
+    "body-parser": "^1.18.3",
+    "bytes": "^3.0.0",
+    "co": "^4.6.0",
+    "config": "^2.0.1",
+    "cron": "^1.5.0",
+    "deep-equal": "^1.0.1",
+    "express": "^4.16.4",
+    "fakeredis": "^2.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "jwa": "^1.1.6",
+    "mime": "^2.3.1",
+    "ms": "^2.1.1",
+    "multi-integer-range": "^4.0.7",
+    "multiparty": "^4.2.1",
+    "mysql": "^2.16.0",
+    "pg": "^7.6.0",
+    "redis": "^2.8.0",
+    "retry": "^0.12.0",
+    "sockjs": "^0.3.19",
+    "underscore": "^1.9.1",
+    "windows-locale": "^1.0.1"
+  },
+  "pkg": {
+    "scripts": [
+      "./sources/editorDataMemory.js",
+      "./sources/editorDataRedis.js",
+      "./sources/pubsubRabbitMQ.js",
+      "../Common/sources/storage-fs.js",
+      "../Common/sources/storage-s3.js"
+    ]
+  }
+}
