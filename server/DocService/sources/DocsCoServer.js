@@ -1103,7 +1103,7 @@ exports.checkJwtHeader = checkJwtHeader;
 exports.checkJwtPayloadHash = checkJwtPayloadHash;
 exports.install = function(server, callbackFunction) {
   var sockjs_echo = sockjs.createServer(cfgSockjs),
-    urlParse = new RegExp("^/doc/([" + constants.DOC_ID_PATTERN + "]*)/c.+", 'i');
+    urlParse = new RegExp("^" + config.ENV_SUBPATH + "/doc/([" + constants.DOC_ID_PATTERN + "]*)/c.+", 'i');
 
   sockjs_echo.on('connection', function(conn) {
     if (!conn) {
@@ -2753,9 +2753,9 @@ exports.install = function(server, callbackFunction) {
 		return licenseType;
 	}
 
-  sockjs_echo.installHandlers(server, {prefix: '/doc/['+constants.DOC_ID_PATTERN+']*/c', log: function(severity, message) {
+  sockjs_echo.installHandlers(server, {prefix: config.ENV_SUBPATH + '/doc/['+constants.DOC_ID_PATTERN+']*/c', log: function(severity, message) {
     //TODO: handle severity
-    logger.info(message);
+    logger.error(message);
   }});
 
   //publish subscribe message brocker

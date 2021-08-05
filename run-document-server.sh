@@ -71,7 +71,7 @@ JWT_SECRET=${JWT_SECRET:-secret}
 JWT_HEADER=${JWT_HEADER:-Authorization}
 JWT_IN_BODY=${JWT_IN_BODY:-false}
 
-GENERATE_FONTS=${GENERATE_FONTS:-false}
+GENERATE_FONTS=${GENERATE_FONTS:-true}
 
 if [[ ${PRODUCT_NAME} == "documentserver" ]]; then
   REDIS_ENABLED=false
@@ -609,7 +609,5 @@ if [ "${GENERATE_FONTS}" == "true" ]; then
 fi
 documentserver-static-gzip.sh ${ONLYOFFICE_DATA_CONTAINER}
 
-cd ${CONF_DIR}
-ls
 tail -f /var/log/${COMPANY_NAME}/**/*.log &
 wait $!

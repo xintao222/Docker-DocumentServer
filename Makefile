@@ -79,4 +79,8 @@ pak:
 		npm install
 	cd server/DocService && \
 		npm install
-	pkg -t node16-linux-x64 -o docservice server/DocService
+	pkg -t node10-linux-x64 -o docservice server/DocService
+
+pakfile:
+	pkg -t node10-linux-x64 --options max_old_space_size=4096 -o docservice server/DocService
+

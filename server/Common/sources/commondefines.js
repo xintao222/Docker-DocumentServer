@@ -983,8 +983,8 @@ const c_oAscUnlockRes = {
   Empty: 2
 };
 
-const buildVersion = '4.1.2';
-const buildNumber = 37;
+const buildVersion = '6.3.1';
+const buildNumber = 32;
 
 exports.TaskQueueData = TaskQueueData;
 exports.CMailMergeSendData = CMailMergeSendData;

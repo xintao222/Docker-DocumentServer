@@ -51,6 +51,7 @@ var cfgStorageFolderPath = configFs.get('folderPath');
 var cfgStorageSecretString = configFs.get('secretString');
 var cfgStorageUrlExpires = configFs.get('urlExpires');
 const cfgExpSessionAbsolute = ms(config.get('services.CoAuthoring.expire.sessionabsolute'));
+var configCoAuthoring = config.get('services.CoAuthoring');
 
 function getFilePath(strPath) {
   return path.join(cfgStorageFolderPath, strPath);
@@ -159,7 +160,7 @@ exports.getSignedUrl = function(baseUrl, strPath, urlType, optFilename, opt_type
   return new Promise(function(resolve, reject) {
     //replace '/' with %2f before encodeURIComponent becase nginx determine %2f as '/' and get wrong system path
     var userFriendlyName = optFilename ? encodeURIComponent(optFilename.replace(/\//g, "%2f")) : path.basename(strPath);
-    var uri = '/' + cfgBucketName + '/' + cfgStorageFolderName + '/' + strPath + '/' + userFriendlyName;
+    var uri = configCoAuthoring.ENV_SUBPATH + '/' + cfgBucketName + '/' + cfgStorageFolderName + '/' + strPath + '/' + userFriendlyName;
     var url = (cfgStorageExternalHost ? cfgStorageExternalHost : baseUrl) + uri;
 
     var date = new Date();
