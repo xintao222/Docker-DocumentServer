@@ -6,5 +6,6 @@ COPY etc/postgresql /etc/postgresql/
 COPY server/Common/config/log4js etc/onlyoffice/documentserver/log4js/
 COPY config /app/ds/setup/config/
 COPY run-document-server1.sh /app/ds/run-document-server1.sh
+COPY web-apps /var/www/onlyoffice/documentserver/web-apps/
 COPY docservice /var/www/onlyoffice/documentserver/server/DocService/docservice
 ENTRYPOINT ["/app/ds/run-document-server1.sh"]
