@@ -1,4 +1,4 @@
-FROM hub.mingdao.com/md/documentserverbase
+FROM hub.mingdao.com/md/documentserverbase:20210805_1610
 
 EXPOSE 80 443
 
