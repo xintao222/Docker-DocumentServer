@@ -204,6 +204,7 @@ docsCoServer.install(server, () => {
 			'      "editorConfig": {\n' +
 			'        "lang": "zh",\n' +
 			'        "customization": {\n' +
+			'            "anonymous": { "request": false },\n' +
 			'          "logo": {\n' +
 			'            "image": "https://passport.baidu.com/passApi/img/small_blank.gif",\n' +
 			'            "imageEmbedded": "https://passport.baidu.com/passApi/img/small_blank.gif",\n' +
